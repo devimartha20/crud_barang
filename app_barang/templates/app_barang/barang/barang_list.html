@@ -1,0 +1,73 @@
+{% extends 'app_barang/layout/base.html' %}
+
+{% block title %}Daftar Barang{% endblock %}
+
+{% block content %}
+<h1>Daftar Barang</h1>
+
+<!-- Button untuk tambah barang -->
+<a href="{% url 'barang_create' %}" class="btn btn-success mb-3">Tambah Barang</a>
+
+<!-- Tabel daftar barang -->
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Kode</th>
+            <th>Nama</th>
+            <th>Tipe</th>
+            <th>Level</th>
+            <th>Induk</th>
+            <th>Satuan</th>
+            <th>Harga</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for barang in barangs %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ barang.kode }}</td>
+            <td>{{ barang.nama }}</td>
+            <td>{{ barang.tipe }}</td>
+            <td>{{ barang.level }}</td>
+            <td>{{ barang.induk }}</td>
+            <td>{{ barang.satuan }}</td>
+            <td>{{ barang.harga }}</td>
+            <td>
+                <!-- Edit Button -->
+                <a href="{% url 'barang_update' barang.pk %}" class="btn btn-warning btn-sm">Edit</a>
+
+                <!-- Delete Button (modal confirmation) -->
+                <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ barang.pk }}">
+                    Hapus
+                </button>
+
+                <!-- Modal Hapus -->
+                <div class="modal fade" id="deleteModal{{ barang.pk }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ barang.pk }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModalLabel{{ barang.pk }}">Konfirmasi Hapus</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Apakah Anda yakin ingin menghapus barang <strong>{{ barang.nama }}</strong>?
+                            </div>
+                            <div class="modal-footer">
+                                <form action="{% url 'barang_delete' barang.pk %}" method="POST">
+                                    {% csrf_token %}
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn btn-danger">Hapus</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

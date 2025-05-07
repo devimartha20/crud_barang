@@ -1,0 +1,88 @@
+{% extends 'app_barang/layout/base.html' %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h2>Daftar Purchase Order (PO)</h2>
+    
+    <!-- Menampilkan pesan jika ada error atau success -->
+    {% if messages %}
+      <div class="alert alert-info">
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+    <div class="mb-3">
+      <a href="{% url 'po_create' %}" class="btn btn-success">Tambah PO</a>
+    </div>
+
+    <!-- Tabel PO -->
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Nomor PO</th>
+          <th>Tanggal</th>
+          <th>Pemasok</th>
+          <th>Gudang</th>
+          <th>Alamat Kirim</th>
+          <th>Barang</th>
+          <th>Qty PO</th>
+          <th>Qty Terima</th>
+          <th>Harga</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for po in pos %}
+          <tr>
+            <td>{{ po.nomor_po }}</td>
+            <td>{{ po.tanggal }}</td>
+            <td>{{ po.pemasok.nama }}</td>
+            <td>{{ po.gudang.nama }}</td>
+            <td>{{ po.alamat_kirim }}</td>
+            <td>{{ po.kode_barang.kode }}</td>
+            <td>{{ po.qty_po }}</td>
+            <td>{{ po.qty_terima }}</td>
+            <td>{{ po.harga }}</td>
+            <td>
+              <a href="{% url 'po_update' po.id %}" class="btn btn-warning btn-sm">Edit</a>
+              <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ po.id }}">
+                Delete
+              </button>
+            </td>
+          </tr>
+
+            <!-- Modal -->
+<div class="modal fade" id="deleteModal{{ po.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ po.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form method="post" action="{% url 'po_delete' po.pk %}">
+          {% csrf_token %}
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteModalLabel{{ po.id }}">Konfirmasi Hapus</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+          </div>
+          <div class="modal-body">
+            Apakah Anda yakin ingin menghapus PO <strong>{{ po.nomor_po }}</strong>?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-danger">Hapus</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+        {% empty %}
+          <tr>
+            <td colspan="9" class="text-center">Tidak ada PO yang tersedia.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+
+{% endblock %}

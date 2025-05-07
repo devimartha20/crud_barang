@@ -1,0 +1,22 @@
+{% extends 'app_barang/layout/base.html' %}
+
+{% block content %}
+
+    {% if form.errors %}
+    <div class="alert alert-danger">
+        {% for field in form %}
+            {% for error in field.errors %}
+                <div>{{ error }}</div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <h2>Edit Gudang: {{ pemasok.nama }}</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+        <a href="{% url 'pemasok_list' %}" class="btn btn-secondary">Batal</a>
+    </form>
+{% endblock %}
