@@ -1,0 +1,100 @@
+{% extends 'app_barang/layout/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Formulir Pembelian (PO)</h2>
+
+  {% if messages %}
+    <div class="alert alert-info">
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post" class="mt-4">
+    {% csrf_token %}
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label for="id_nomor_po" class="form-label">Nomor PO</label>
+        {{ form.nomor_po }}
+      </div>
+      <div class="col-md-6">
+        <label for="id_tanggal" class="form-label">Tanggal</label>
+        {{ form.tanggal }}
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Kiri -->
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="id_kode_barang" class="form-label">Kode Barang</label>
+          {{ form.kode_barang }}
+        </div>
+        <div class="mb-3">
+          <label for="id_qty_po" class="form-label">Quantity PO</label>
+          {{ form.qty_po }}
+        </div>
+        <div class="mb-3">
+          <label for="id_harga" class="form-label">Harga</label>
+          {{ form.harga }}
+        </div>
+      </div>
+
+      <!-- Kanan -->
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="id_pemasok" class="form-label">Pemasok</label>
+          {{ form.pemasok }}
+        </div>
+        <div class="mb-3">
+          <label for="id_gudang" class="form-label">Gudang</label>
+          {{ form.gudang }}
+        </div>
+        <div class="mb-3">
+          <label for="id_alamat_kirim" class="form-label">Alamat Kirim</label>
+          {{ form.alamat_kirim }}
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Simpan PO</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const gudangSelect = document.getElementById('id_gudang');
+    const alamatKirimField = document.getElementById('id_alamat_kirim');
+
+    const barangSelect = document.getElementById('id_kode_barang');
+    const hargaField = document.getElementById('id_harga');
+
+    gudangSelect.addEventListener('change', function () {
+        const gudangId = this.value;
+        if (gudangId) {
+            fetch(`/ajax/get-alamat/?gudang_id=${gudangId}`)
+                .then(response => response.json())
+                .then(data => {
+                    alamatKirimField.value = data.alamat;
+                });
+        }
+    });
+
+    barangSelect.addEventListener('change', function () {
+        const barangId = this.value;
+        if (barangId) {
+            fetch(`/ajax/get-harga/?barang_id=${barangId}`)
+                .then(response => response.json())
+                .then(data => {
+                    hargaField.value = data.harga;
+                });
+        }
+    });
+});
+</script>
+{% endblock extra_js %}

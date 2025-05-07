@@ -58,6 +58,7 @@ class PO(models.Model):
 
     def clean(self):
         if self.tanggal > timezone.now().date():
+            print(timezone.now())
             raise ValidationError({'tanggal': 'Tanggal tidak boleh lebih dari hari ini.'})
         if self.qty_po <= 0:
             raise ValidationError({'qty_po': 'Qty harus lebih dari 0.'})

@@ -3,71 +3,88 @@
 {% block title %}Daftar Barang{% endblock %}
 
 {% block content %}
-<h1>Daftar Barang</h1>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4">Daftar Barang</h1>
+    <a href="{% url 'barang_create' %}" class="btn btn-primary">+ Tambah Barang</a>
+</div>
 
-<!-- Button untuk tambah barang -->
-<a href="{% url 'barang_create' %}" class="btn btn-success mb-3">Tambah Barang</a>
+<div class="table-responsive">
+    <table id="tabel-barang"  class="table table-bordered table-hover text-center align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>#</th>
+                <th>Kode</th>
+                <th>Nama</th>
+                <th>Tipe</th>
+                <th>Level</th>
+                <th>Induk</th>
+                <th>Satuan</th>
+                <th>Harga</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for barang in barangs %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ barang.kode }}</td>
+                <td>{{ barang.nama }}</td>
+                <td>{{ barang.tipe }}</td>
+                <td>{{ barang.level }}</td>
+                <td>{{ barang.induk }}</td>
+                <td>{{ barang.satuan }}</td>
+                <td>{{ barang.harga }}</td>
+                <td>
+                    {% if barang.kode not in used_as_induk_kodes and barang.pk not in used_in_po_ids %}
+                        <a href="{% url 'barang_update' barang.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ barang.pk }}">Hapus</button>
 
-<!-- Tabel daftar barang -->
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Kode</th>
-            <th>Nama</th>
-            <th>Tipe</th>
-            <th>Level</th>
-            <th>Induk</th>
-            <th>Satuan</th>
-            <th>Harga</th>
-            <th>Aksi</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for barang in barangs %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ barang.kode }}</td>
-            <td>{{ barang.nama }}</td>
-            <td>{{ barang.tipe }}</td>
-            <td>{{ barang.level }}</td>
-            <td>{{ barang.induk }}</td>
-            <td>{{ barang.satuan }}</td>
-            <td>{{ barang.harga }}</td>
-            <td>
-                <!-- Edit Button -->
-                <a href="{% url 'barang_update' barang.pk %}" class="btn btn-warning btn-sm">Edit</a>
-
-                <!-- Delete Button (modal confirmation) -->
-                <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ barang.pk }}">
-                    Hapus
-                </button>
-
-                <!-- Modal Hapus -->
-                <div class="modal fade" id="deleteModal{{ barang.pk }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ barang.pk }}" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="deleteModalLabel{{ barang.pk }}">Konfirmasi Hapus</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                Apakah Anda yakin ingin menghapus barang <strong>{{ barang.nama }}</strong>?
-                            </div>
-                            <div class="modal-footer">
-                                <form action="{% url 'barang_delete' barang.pk %}" method="POST">
-                                    {% csrf_token %}
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                    <button type="submit" class="btn btn-danger">Hapus</button>
-                                </form>
+                        <!-- Modal Konfirmasi Hapus -->
+                        <div class="modal fade" id="deleteModal{{ barang.pk }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ barang.pk }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Konfirmasi Hapus</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Yakin ingin menghapus barang <strong>{{ barang.nama }}</strong>?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <form action="{% url 'barang_delete' barang.pk %}" method="POST">
+                                            {% csrf_token %}
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                            <button type="submit" class="btn btn-danger">Hapus</button>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
+                    {% else %}
+                        <button class="btn btn-warning btn-sm" disabled>Edit</button>
+                        <button class="btn btn-danger btn-sm" disabled>Hapus</button>
+                    {% endif %}
+                    <a href="{% url 'barang_detail' barang.pk %}" class="btn btn-info btn-sm">Detail</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
+{% block extra_js %}
+<script>
+    $(document).ready(function () {
+        $('#tabel-barang').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'excel', 'pdf', 'print'
+            ],
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' // Bahasa Indonesia
+            }
+        });
+    });
+    </script>
+    
+{% endblock extra_js %}

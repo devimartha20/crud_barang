@@ -99,6 +99,6 @@ class TerimaBarangForm(forms.ModelForm):
     }
     
     nomor_po = forms.ModelChoiceField(
-        queryset=PO.objects.filter(qty_terima__lte=models.F('qty_po')),
+        queryset=PO.objects.filter(qty_terima__lt=models.F('qty_po')),
         widget=forms.Select(attrs={'class': 'form-control'})
     )

@@ -1,0 +1,22 @@
+{% extends 'app_barang/layout/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Detail Penerimaan Barang - {{ terima.nomor_terima }}</h2>
+  
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <p><strong>Tanggal:</strong> {{ terima.tanggal }}</p>
+      <p><strong>Gudang:</strong> {{ terima.gudang }}</p>
+      <p><strong>Pemasok:</strong> {{ terima.pemasok }}</p>
+    </div>
+    <div class="col-md-6">
+      <p><strong>Nomor PO:</strong> {{ terima.nomor_po.nomor_po }}</p>
+      <p><strong>Barang:</strong> {{ terima.kode_barang }}</p>
+      <p><strong>Qty Diterima:</strong> {{ terima.qty_terima }}</p>
+    </div>
+  </div>
+
+  <a href="{% url 'po_detail' terima.nomor_po.pk %}" class="btn btn-secondary mt-3">Lihat PO Terkait</a>
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'app_barang/layout/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Detail Barang</h2>
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">{{ barang.nama }} ({{ barang.kode }})</h5>
+      <p><strong>Tipe:</strong> {{ barang.get_tipe_display }}</p>
+      <p><strong>Level:</strong> {{ barang.level }}</p>
+      <p><strong>Induk:</strong> {{ barang.induk|default:"-" }}</p>
+      <p><strong>Satuan:</strong> {{ barang.satuan|default:"-" }}</p>
+      <p><strong>Harga:</strong> Rp{{ barang.harga|default:"0" }}</p>
+      <p><strong>Stok:</strong> {{ barang.qty_stok }}</p>
+    </div>
+  </div>
+
+  <h4>Barang Induk Dari:</h4>
+  {% if anak_barang %}
+    <ul>
+      {% for anak in anak_barang %}
+        <li>{{ anak.kode }} - {{ anak.nama }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Tidak ada barang yang menjadikan ini sebagai induk.</p>
+  {% endif %}
+
+  <h4>Daftar PO Terkait</h4>
+  {% if po_terkait %}
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Nomor PO</th>
+          <th>Tanggal</th>
+          <th>Pemasok</th>
+          <th>Qty PO</th>
+          <th>Qty Terima</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for po in po_terkait %}
+        <tr>
+          <td>{{ po.nomor_po }}</td>
+          <td>{{ po.tanggal }}</td>
+          <td>{{ po.pemasok.nama }}</td>
+          <td>{{ po.qty_po }}</td>
+          <td>{{ po.qty_terima }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>Tidak ada PO terkait.</p>
+  {% endif %}
+
+ 
+</div>
+{% endblock %}

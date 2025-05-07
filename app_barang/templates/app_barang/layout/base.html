@@ -3,33 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRUD Pemasok</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Manajemen Stok</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css">
+    <!-- jQuery (wajib sebelum DataTables) -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+        }
+        .sidebar {
+            min-width: 250px;
+            max-width: 250px;
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+        .sidebar .nav-link.active {
+            font-weight: bold;
+            background-color: #e9ecef;
+        }
+        .main {
+            flex-grow: 1;
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Data Stok Barang</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'pemasok_list' %}">Pemasok</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
-    <div class="container my-4">
+    <!-- Sidebar -->
+    <div class="sidebar border-end">
+        <h5 class="text-center">Pengelolaan Barang</h5>
+        <div class="nav flex-column px-3">
+            <strong class="px-2 text-muted">Data Master</strong>
+            <a href="{% url 'barang_list' %}" class="nav-link {% if request.resolver_match.url_name == 'barang_list' %}active{% endif %}">
+                Data Barang
+            </a>
+            <a href="{% url 'gudang_list' %}" class="nav-link {% if request.resolver_match.url_name == 'gudang_list' %}active{% endif %}">
+                Data Gudang
+            </a>
+            <a href="{% url 'pemasok_list' %}" class="nav-link {% if request.resolver_match.url_name == 'pemasok_list' %}active{% endif %}">
+                Data Pemasok
+            </a>
+            <hr>
+            <strong class="px-2 text-muted">Transaksi</strong>
+            <a href="{% url 'po_list' %}" class="nav-link {% if request.resolver_match.url_name == 'po_list' %}active{% endif %}">
+                Purchase Order
+            </a>
+            <a href="{% url 'terima_barang_list' %}" class="nav-link {% if request.resolver_match.url_name == 'terima_barang_list' %}active{% endif %}">
+               Terima Barang
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
         {% block content %}
         {% endblock %}
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    {% block extra_js %}
-        {% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- DataTables JS + Export Buttons -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+
+    <!-- JSZip & PDFMake for export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

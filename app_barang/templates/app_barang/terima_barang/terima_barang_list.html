@@ -1,64 +1,85 @@
 {% extends "app_barang/layout/base.html" %}
 {% block content %}
 <div class="container mt-4">
-    <h3>Daftar Terima Barang</h3>
-    <a href="{% url 'terima_barang_create' %}" class="btn btn-primary mb-3">+ Tambah Terima Barang</a>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="h4">Daftar Terima Barang</h3>
+        <a href="{% url 'terima_barang_create' %}" class="btn btn-primary">+ Tambah Terima Barang</a>
+    </div>
+    
+    <div class="table-responsive">
+        <table id="tabel-terima-barang" class="table table-bordered table-hover text-center align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Nomor Terima</th>
+                    <th>Tanggal</th>
+                    <th>PO</th>
+                    <th>Kode Barang</th>
+                    <th>Qty</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for terima in terima_barangs %}
+                <tr>
+                    <td>{{ terima.nomor_terima }}</td>
+                    <td>{{ terima.tanggal }}</td>
+                    <td>{{ terima.nomor_po.nomor_po }}</td>
+                    <td>{{ terima.kode_barang }}</td>
+                    <td>{{ terima.qty_terima }}</td>
+                    <td>
+                        <a href="{% url 'terima_barang_update' terima.id %}" class="btn btn-sm btn-warning">Edit</a>
+                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ terima.id }}">
+                            Hapus
+                        </button>
+                        <a href="{% url 'terima_barang_detail' terima.pk %}" class="btn btn-info btn-sm">Detail</
 
-    <table class="table table-bordered">
-        <thead class="table-light">
-            <tr>
-                <th>Nomor Terima</th>
-                <th>Tanggal</th>
-                <th>PO</th>
-                <th>Kode Barang</th>
-                <th>Qty</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for terima in terima_barangs %}
-            <tr>
-                <td>{{ terima.nomor_terima }}</td>
-                <td>{{ terima.tanggal }}</td>
-                <td>{{ terima.nomor_po.nomor_po }}</td>
-                <td>{{ terima.kode_barang }}</td>
-                <td>{{ terima.qty_terima }}</td>
-                <td>
-                    <a href="{% url 'terima_barang_update' terima.id %}" class="btn btn-sm btn-warning">Edit</a>
-                    <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ terima.id }}">
-                        Hapus
-                    </button>
-
-                    <!-- Modal Hapus -->
-                    <div class="modal fade" id="deleteModal{{ terima.id }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                      <div class="modal-dialog">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="deleteModalLabel">Konfirmasi Hapus</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-                          </div>
-                          <div class="modal-body">
-                            Apakah Anda yakin ingin menghapus terima barang <strong>{{ terima.nomor_terima }}</strong>?
-                          </div>
-                          <div class="modal-footer">
-                            <form method="post" action="{% url 'terima_barang_delete' terima.id %}">
-                                {% csrf_token %}
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                <button type="submit" class="btn btn-danger">Hapus</button>
-                            </form>
+                        <!-- Modal Hapus -->
+                        <div class="modal fade" id="deleteModal{{ terima.id }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModalLabel">Konfirmasi Hapus</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                              </div>
+                              <div class="modal-body">
+                                Apakah Anda yakin ingin menghapus terima barang <strong>{{ terima.nomor_terima }}</strong>?
+                              </div>
+                              <div class="modal-footer">
+                                <form method="post" action="{% url 'terima_barang_delete' terima.id %}">
+                                    {% csrf_token %}
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn btn-danger">Hapus</button>
+                                </form>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                    <!-- End Modal -->
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="6" class="text-center">Belum ada data</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                        <!-- End Modal -->
+                    </td>
+                </tr>
+                {% empty %}
+                {% comment %} <tr>
+                    <td colspan="6" class="text-center">Belum ada data</td>
+                </tr> {% endcomment %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        $('#tabel-terima-barang').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'excel', 'pdf', 'print'
+            ],
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' // Bahasa Indonesia
+            }
+        });
+    });
+</script>
 {% endblock %}

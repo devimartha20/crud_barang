@@ -1,12 +1,14 @@
 {% extends "app_barang/layout/base.html" %}
 
 {% block content %}
-{% if messages %}
-      <div class="alert alert-info">
-        {% for message in messages %}
-          <p>{{ message }}</p>
-        {% endfor %}
-      </div>
+{% if form.errors %}
+        <div class="alert alert-danger">
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            {% endfor %}
+        </div>
     {% endif %}
 <div class="container mt-4">
     <h3>Form Terima Barang</h3>
@@ -17,22 +19,25 @@
                 {{ form.nomor_terima.label_tag }} {{ form.nomor_terima }}
             </div>
             <div class="col-md-6 mb-3">
-                {{ form.tanggal.label_tag }} {{ form.tanggal }}
+                {{ form.pemasok.label_tag }} {{ form.pemasok }}
             </div>
             <div class="col-md-6 mb-3">
-                {{ form.nomor_po.label_tag }} {{ form.nomor_po }}
+                {{ form.tanggal.label_tag }} {{ form.tanggal }}
             </div>
             <div class="col-md-6 mb-3">
                 {{ form.kode_barang.label_tag }} {{ form.kode_barang }}
             </div>
+          
             <div class="col-md-6 mb-3">
-                {{ form.pemasok.label_tag }} {{ form.pemasok }}
+                {{ form.nomor_po.label_tag }} {{ form.nomor_po }}
             </div>
+           
             <div class="col-md-6 mb-3">
                 {{ form.gudang.label_tag }} {{ form.gudang }}
             </div>
             <div class="col-md-6 mb-3">
                 {{ form.qty_terima.label_tag }} {{ form.qty_terima }}
+                <small id="qtySisaHint" class="form-text text-muted"></small>
             </div>
         </div>
         <button type="submit" class="btn btn-primary">Simpan</button>
@@ -50,7 +55,16 @@
     const pemasokField = document.getElementById('id_pemasok');
     const qtyTerimaField = document.getElementById('id_qty_terima');
 
-    let maxQty = 0; // Simpan qty_po dari backend
+    const isEdit = {{ is_edit|yesno:"true,false" }};
+    const qtyTerimaLama = {{ qty_terima_lama|default:0 }};
+    const poLamaId = "{{ po_lama_id }}";
+
+    let qtySisaHint = document.createElement('small');
+    qtySisaHint.style.display = 'block';
+    qtySisaHint.style.color = '#555';
+    qtyTerimaField.parentElement.appendChild(qtySisaHint);
+
+    let maxQty = 0;
 
     poField.addEventListener('change', function () {
         const poId = poField.value;
@@ -64,14 +78,24 @@
                         kodeBarangField.value = barang.kode_barang;
                         gudangField.value = barang.gudang;
                         pemasokField.value = barang.pemasok;
-                        maxQty = barang.qty_po || 0;
+
+                        // Hitung max qty tergantung mode
+                        let sisaQty = barang.qty_po - barang.qty_terima;
+                        if (isEdit && poField.value === poLamaId) {
+                            sisaQty += qtyTerimaLama;
+                            console.log(sisaQty, qtyTerimaLama)
+                        }
+
+                        maxQty = Math.max(sisaQty, 0);
                         qtyTerimaField.setAttribute('max', maxQty);
                         qtyTerimaField.setAttribute('min', 0);
+                        qtySisaHint.textContent = `Sisa qty yang bisa diterima: ${maxQty}`;
                     } else {
                         kodeBarangField.value = '';
                         gudangField.value = '';
                         pemasokField.value = '';
-                        qtyTerimaField.setAttribute('min', 0);
+                        qtyTerimaField.removeAttribute('max');
+                        qtySisaHint.textContent = '';
                     }
                 })
                 .catch(error => {
@@ -80,7 +104,11 @@
         }
     });
 
-  
+    if (poField.value) {
+        const event = new Event('change');
+        poField.dispatchEvent(event);
+    }
 </script>
+
 
 {% endblock extra_js %}

@@ -1,0 +1,46 @@
+{% extends 'app_barang/layout/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Detail PO - {{ po.nomor_po }}</h2>
+  
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <p><strong>Tanggal:</strong> {{ po.tanggal }}</p>
+      <p><strong>Pemasok:</strong> {{ po.pemasok.nama }}</p>
+      <p><strong>Gudang:</strong> {{ po.gudang.nama }}</p>
+    </div>
+    <div class="col-md-6">
+      <p><strong>Alamat Kirim:</strong> {{ po.alamat_kirim }}</p>
+      <p><strong>Barang:</strong> {{ po.kode_barang.nama }} ({{ po.kode_barang.kode }})</p>
+      <p><strong>Qty PO:</strong> {{ po.qty_po }}</p>
+      <p><strong>Harga:</strong> Rp {{ po.harga|floatformat:0 }}</p>
+    </div>
+  </div>
+
+  <hr>
+  <h4 class="mt-4">Daftar Penerimaan Barang</h4>
+  {% if terima_list %}
+    <table class="table table-bordered mt-2">
+      <thead>
+        <tr>
+          <th>Nomor Terima</th>
+          <th>Tanggal</th>
+          <th>Qty Diterima</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for terima in terima_list %}
+        <tr>
+          <td>{{ terima.nomor_terima }}</td>
+          <td>{{ terima.tanggal }}</td>
+          <td>{{ terima.qty_terima }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="text-muted">Belum ada barang diterima.</p>
+  {% endif %}
+</div>
+{% endblock %}

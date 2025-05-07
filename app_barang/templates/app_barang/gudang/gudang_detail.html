@@ -1,0 +1,32 @@
+{% extends 'app_barang/layout/base.html' %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h2>Detail Gudang: {{ gudang.nama }} ({{ gudang.kode }})</h2>
+    <p><strong>Alamat:</strong> {{ gudang.alamat }}</p>
+
+    <h4 class="mt-4">PO Terkait:</h4>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Nomor PO</th>
+          <th>Barang</th>
+          <th>Qty</th>
+          <th>Pemasok</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for po in po_terkait %}
+          <tr>
+            <td><a href="{% url 'po_detail' po.pk %}">{{ po.nomor_po }}</a></td>
+            <td>{{ po.kode_barang.nama }}</td>
+            <td>{{ po.qty_po }}</td>
+            <td>{{ po.pemasok.nama }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4">Tidak ada PO untuk gudang ini.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

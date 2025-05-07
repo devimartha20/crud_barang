@@ -1,21 +1,27 @@
 {% extends 'app_barang/layout/base.html' %}
+{% load custom_tags %}
+
+{% block title %}Daftar Gudang{% endblock %}
 
 {% block content %}
-    <h2>Daftar Gudang</h2>
-    <button class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#addGudangModal">Tambah Gudang</button>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4">Daftar Gudang</h1>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addGudangModal">+ Tambah Gudang</button>
+</div>
 
-    {% if form.errors %}
-        <div class="alert alert-danger">
-            {% for field in form %}
-                {% for error in field.errors %}
-                    <div>{{ error }}</div>
-                {% endfor %}
-            {% endfor %}
-        </div>
-    {% endif %}
+{% if form.errors %}
+<div class="alert alert-danger">
+    {% for field in form %}
+        {% for error in field.errors %}
+            <div>{{ error }}</div>
+        {% endfor %}
+    {% endfor %}
+</div>
+{% endif %}
 
-    <table class="table table-bordered">
-        <thead>
+<div class="table-responsive">
+    <table id="tabel-gudang" class="table table-bordered table-hover text-center align-middle">
+        <thead class="table-light">
             <tr>
                 <th>Kode</th>
                 <th>Nama</th>
@@ -30,58 +36,79 @@
                 <td>{{ gudang.nama }}</td>
                 <td>{{ gudang.alamat }}</td>
                 <td>
-                    <a href="{% url 'gudang_update' gudang.pk %}" class="btn btn-warning btn-sm">Edit</a>
-                    <!-- Tombol untuk memicu modal delete -->
-                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ gudang.pk }}">
-                        Hapus
-                    </button>
+                    {% if not gudang_dipakai|dict_get:gudang.id %}
+                        <a href="{% url 'gudang_update' gudang.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ gudang.pk }}">Hapus</button>
+                    {% else %}
+                        <button class="btn btn-warning btn-sm" disabled>Edit</button>
+                        <button class="btn btn-danger btn-sm" disabled>Hapus</button>
+                    {% endif %}
+                    <a href="{% url 'gudang_detail' gudang.pk %}" class="btn btn-info btn-sm">Detail</a>
                 </td>
             </tr>
 
-            <!-- Delete Modal -->
+            {% if not gudang_dipakai|dict_get:gudang.id %}
+            <!-- Modal Hapus -->
             <div class="modal fade" id="deleteModal{{ gudang.pk }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ gudang.pk }}" aria-hidden="true">
-                <div class="modal-dialog">
-                <div class="modal-content">
-                    <form method="POST" action="{% url 'gudang_delete' gudang.pk %}">
-                    {% csrf_token %}
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteModalLabel{{ gudang.pk }}">Konfirmasi Hapus</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <form method="POST" action="{% url 'gudang_delete' gudang.pk %}">
+                            {% csrf_token %}
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModalLabel{{ gudang.pk }}">Konfirmasi Hapus</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                            </div>
+                            <div class="modal-body">
+                                Apakah Anda yakin ingin menghapus gudang <strong>{{ gudang.nama }}</strong>?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="submit" class="btn btn-danger">Hapus</button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="modal-body">
-                        Apakah Anda yakin ingin menghapus gudang <strong>{{ gudang.nama }}</strong>?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-danger">Hapus</button>
-                    </div>
-                    </form>
-                </div>
                 </div>
             </div>
-  
+            {% endif %}
             {% endfor %}
         </tbody>
     </table>
+</div>
 
-    <!-- Add Gudang Modal -->
-    <div class="modal fade" id="addGudangModal" tabindex="-1" aria-labelledby="addGudangModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
+<!-- Modal Tambah Gudang -->
+<div class="modal fade" id="addGudangModal" tabindex="-1" aria-labelledby="addGudangModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{% url 'gudang_list' %}">
+                {% csrf_token %}
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addgudangModalLabel">Tambah Gudang</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="addGudangModalLabel">Tambah Gudang</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="POST" action="{% url 'gudang_list' %}">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                    </form>
+                    {{ form.as_p }}
                 </div>
-            </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
         </div>
     </div>
-
-
+</div>
 {% endblock %}
+{% block extra_js %}
+<script>
+    $(document).ready(function () {
+        $('#tabel-gudang').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'excel', 'pdf', 'print'
+            ],
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' // Bahasa Indonesia
+            }
+        });
+    });
+    </script>
+    
+{% endblock extra_js %}
